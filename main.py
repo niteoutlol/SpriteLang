@@ -32,25 +32,27 @@ def lexline(line: str):
     line = line.split("(")
     line = [i.replace(")", "") for i in line]
     for i in range(len(line)):
-        print(line[i])
-        if line[i].startswith("//"):
-            del line[i]
-            pass
-        elif line[i] in keywords:
+        if line[i] in keywords:
             pass
         elif line[i].isnumeric():
-            line[i] = "INT:" + line[i]
+            line[i] = "int(" + line[i] + ")"
         elif isinstance(line[i], str):
-            line[i] = "STRING:" + line[i]
+            line[i] = "str(" + line[i] + ")"
         else:
             print("Syntax error has occured.")
-            return line
     return line
 
 def parseline(line: list):
-    #for i in range(len(line)):
-    #    ln = line[i]
-    #    if ln == "print":
+    if indexexists(line, 1):
+        #if "STRING:" in line[1]:
+        #    line = line[1].replace("STRING:", "")
+        #elif "INT:" in line[1]:
+        #    line = line[1].replace("INT:", "")
+        #else:
+        #    print("Parser error")
+        pass
+    else:
+        print("Indexing error")
     return line
 
 def indexexists(list, index):
@@ -58,29 +60,22 @@ def indexexists(list, index):
 
 def compileprogram(program, programpath):
     program = program.split("\n")
+    basename = os.path.basename(programpath)
+    if basename.endswith(".sprite"):
+        basename = basename[:-len(".sprite")]
+        basename += ".py"
+    with open(basename, "w") as out:
+        out.write("")
     for i in range(len(program)):
         line = lexline(program[i])
         line = parseline(line)
         print(line)
-        basename = os.path.basename(programpath)
-        if basename.endswith(".sprite"):
-            basename = basename[:-len(".sprite")]
-            basename += ".py"
-        with open(basename, "w") as out:
+        with open(basename, "a") as out:
             if line[0] == "print":
-                value = ""
-                if indexexists(line, 1):
-                    if "STRING:" in line[1]:
-                        value = line[1].replace("STRING:", "")
-                    elif "INT:" in line[1]:
-                        value = line[1].replace("INT:", "")
-                    else:
-                        print("Parser error")
-                print(value)
                 if line[i].isnumeric():
-                    out.write("print(%d)\n" % value)
+                    out.write("print(%d)\n" % line[1])
                 else:
-                    out.write("print(%s)\n" % value)
+                    out.write("print(%s)\n" % line[1])
 
 if __name__ == "__main__":
     argv = sys.argv
