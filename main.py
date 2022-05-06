@@ -1,18 +1,6 @@
 import sys
 import os
 
-op_counter = 0
-def opcount(reset = False):
-    global op_counter
-    if reset:
-        op_counter = 0
-    result = op_counter
-    op_counter += 1
-    return result
-
-TEST_OP = opcount()
-OPERATIONS = opcount()
-
 INDENTS = 0
 
 def indent():
@@ -26,7 +14,7 @@ def loadprogram(filepath):
     #program += "<EOF>"
     return program
 
-keywords = ["print"]
+keywords = ["print", "math"]
 
 def lexline(line: str):
     line = line.split("(")
@@ -76,6 +64,8 @@ def compileprogram(program, programpath):
                     out.write("print(%d)\n" % line[1])
                 else:
                     out.write("print(%s)\n" % line[1])
+            elif line[0] == "math":
+                out.write("# Math is not implemented")
 
 if __name__ == "__main__":
     argv = sys.argv
