@@ -22,6 +22,9 @@ def lexline(line: str):
     for i in range(len(line)):
         if line[i] in keywords:
             pass
+        elif "//" in line[i]:
+            line[i] = line[i].replace("//", "")
+            line[i] = "#" + line[i]
         elif line[i].isnumeric():
             line[i] = "int(" + line[i] + ")"
         elif isinstance(line[i], str):
@@ -31,16 +34,16 @@ def lexline(line: str):
     return line
 
 def parseline(line: list):
-    if indexexists(line, 1):
-        #if "STRING:" in line[1]:
-        #    line = line[1].replace("STRING:", "")
-        #elif "INT:" in line[1]:
-        #    line = line[1].replace("INT:", "")
-        #else:
-        #    print("Parser error")
-        pass
-    else:
-        print("Indexing error")
+    # if indexexists(line, 1):
+    #     #if "STRING:" in line[1]:
+    #     #    line = line[1].replace("STRING:", "")
+    #     #elif "INT:" in line[1]:
+    #     #    line = line[1].replace("INT:", "")
+    #     #else:
+    #     #    print("Parser error")
+    #     pass
+    # else:
+    #     print("Indexing error")
     return line
 
 def indexexists(list, index):
@@ -57,16 +60,20 @@ def compileprogram(program, programpath):
     for i in range(len(program)):
         line = lexline(program[i])
         line = parseline(line)
-        print(line)
+        #print(line)
         with open(basename, "a") as out:
-            if line[0] == "print":
-                if line[i].isnumeric():
+            if "#" in line[0]:
+                out.write(line[0] + "\n")
+            elif line[0] == "print":
+                if line[1].isnumeric():
                     out.write("print(%d)\n" % line[1])
                 else:
                     out.write("print(%s)\n" % line[1])
             elif line[0] == "math":
                 out.write("# Math is not implemented")
-
+            elif "" in line[0]:
+                out.write("\n")
+            
 if __name__ == "__main__":
     argv = sys.argv
     assert len(argv)  >= 1
