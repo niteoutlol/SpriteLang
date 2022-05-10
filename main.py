@@ -2,48 +2,90 @@ import sys
 import os
 
 INDENTS = 0
+VARS = []
 
 def indent():
     result = ""
-    for i in range(INDENTS):
+    for _ in range(INDENTS):
         result += "    "
     return result
 
+def isfloat(string):
+    try:
+        float(string)
+        return True
+    except ValueError:
+        return False
+
 def loadprogram(filepath):
     program = open(filepath, 'r').read()
-    #program += "<EOF>"
     return program
 
-keywords = ["print", "math"]
+keywords = ["var"]
+functions = ["print"]
+
+def typecheck(string):
+    #print(string)
+    # ??? FJERNER ALE SPACES
+    if "\"" and "\"" in string:
+        for i in range(len(string)):
+            print(string)
+            if string[i - 1] == " ":
+                string = string.replace(" ", "")
+    if string.isnumeric():
+        return "int(" + string + ")"
+    elif isfloat(string):
+        return "float(" + string + ")"
+    elif isinstance(string, str):
+        if "\"" and "\"" in string:
+            return "str(" + string + ")"
+        else:
+            if string in VARS:
+                print(string)
+                return string
+            else:
+                print("Invalid type has been found.")
+                exit()
+    else:
+        print("Something very weird has just occured and i have no idea how you did that.")
 
 def lexline(line: str):
+    #print("Starting Lexer")
     line = line.split("(")
     line = [i.replace(")", "") for i in line]
     for i in range(len(line)):
-        if line[i] in keywords:
-            pass
-        elif "//" in line[i]:
+        if "//" in line[i]:
             line[i] = line[i].replace("//", "")
             line[i] = "#" + line[i]
-        elif line[i].isnumeric():
-            line[i] = "int(" + line[i] + ")"
-        elif isinstance(line[i], str):
-            line[i] = "str(" + line[i] + ")"
+        elif "var " in line[i]:
+            pass
+        elif line[i] in functions or line[i] in keywords:
+            pass
+        elif line[i] == "":
+            pass
         else:
-            print("Syntax error has occured.")
+            line[i] = typecheck(line[i])
     return line
 
 def parseline(line: list):
-    # if indexexists(line, 1):
-    #     #if "STRING:" in line[1]:
-    #     #    line = line[1].replace("STRING:", "")
-    #     #elif "INT:" in line[1]:
-    #     #    line = line[1].replace("INT:", "")
-    #     #else:
-    #     #    print("Parser error")
-    #     pass
-    # else:
-    #     print("Indexing error")
+    #print("Starting Parser")
+    if "var " in line[0]:
+        line = line[0].replace("var ", "")
+        line = line.split("=")
+        line[len(line) - 1] = typecheck(line[len(line) - 1])
+        line[0] = line[0].replace(" ", "")
+        VARS.append(line[0])
+        line[0] += " ="
+        line += "\n"
+        line = " ".join(line)
+    elif line[0] == "print":
+        line = "print(%s)\n" % line[1]
+    elif "" in line[0]:
+        line = ("\n")
+    else:
+        print("Something very weird has just occured and i have no idea how you did that.")
+        exit()
+    line = str(line)
     return line
 
 def indexexists(list, index):
@@ -60,19 +102,8 @@ def compileprogram(program, programpath):
     for i in range(len(program)):
         line = lexline(program[i])
         line = parseline(line)
-        #print(line)
         with open(basename, "a") as out:
-            if "#" in line[0]:
-                out.write(line[0] + "\n")
-            elif line[0] == "print":
-                if line[1].isnumeric():
-                    out.write("print(%d)\n" % line[1])
-                else:
-                    out.write("print(%s)\n" % line[1])
-            elif line[0] == "math":
-                out.write("# Math is not implemented")
-            elif "" in line[0]:
-                out.write("\n")
+            out.write(line)
             
 if __name__ == "__main__":
     argv = sys.argv
@@ -94,7 +125,10 @@ if __name__ == "__main__":
         basename = os.path.basename(program_path)
         if basename.endswith(ext):
             basename = basename[:-len(ext)]
-        print("[INFO] Generating %s" % (basename + ".py"))
+        print("[COM] Compiling %s" % (basename + ".py"))
         compileprogram(program, program_path)
+        print("[COM] Compiled %s" % (basename + ".py"))
+        print("[RUN] Executing %s\n" % (basename + ".py"))
+        exec(open(basename + ".py").read())
     else:
         exit(1)
