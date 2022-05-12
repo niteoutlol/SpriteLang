@@ -1,3 +1,8 @@
-// må legge til den sjekken for om det er "\"" i "".startswith "".endswith
-var chad = "Hello, World!"
-print(chad)
+// Test program coded inside of SpriteLang
+
+var welcome = "Welcome to SpriteLang"
+
+print(welcome)
+
+var welcome = "Bye"
+print(welcome)

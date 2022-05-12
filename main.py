@@ -25,13 +25,8 @@ keywords = ["var"]
 functions = ["print"]
 
 def typecheck(string):
-    #print(string)
-    # ??? FJERNER ALE SPACES
-    if "\"" and "\"" in string:
-        for i in range(len(string)):
-            print(string)
-            if string[i - 1] == " ":
-                string = string.replace(" ", "")
+    if string.startswith(" "):
+        string = string.replace(" ", "", 1)
     if string.isnumeric():
         return "int(" + string + ")"
     elif isfloat(string):
@@ -41,7 +36,6 @@ def typecheck(string):
             return "str(" + string + ")"
         else:
             if string in VARS:
-                print(string)
                 return string
             else:
                 print("Invalid type has been found.")
@@ -50,13 +44,11 @@ def typecheck(string):
         print("Something very weird has just occured and i have no idea how you did that.")
 
 def lexline(line: str):
-    #print("Starting Lexer")
     line = line.split("(")
     line = [i.replace(")", "") for i in line]
     for i in range(len(line)):
         if "//" in line[i]:
-            line[i] = line[i].replace("//", "")
-            line[i] = "#" + line[i]
+            pass
         elif "var " in line[i]:
             pass
         elif line[i] in functions or line[i] in keywords:
@@ -68,13 +60,16 @@ def lexline(line: str):
     return line
 
 def parseline(line: list):
-    #print("Starting Parser")
-    if "var " in line[0]:
+    if "//" in line[0]:
+        line = line[0].replace("//", "#")
+        line += "\n"
+    elif "var " in line[0]:
         line = line[0].replace("var ", "")
         line = line.split("=")
         line[len(line) - 1] = typecheck(line[len(line) - 1])
         line[0] = line[0].replace(" ", "")
-        VARS.append(line[0])
+        if not line[0] in VARS:
+            VARS.append(line[0])
         line[0] += " ="
         line += "\n"
         line = " ".join(line)

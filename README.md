@@ -6,14 +6,6 @@
 
 ## **TODO**
 
-- [ ] Compilable
+- [x] Compilable
 - [ ] Easy syntax
 - [ ] Self-hosted *(Written in itself)* **(May not happen)**
-
-## **Beginner Guide**
-
-### Comming soon
-
-## **Experienced Guide**
-
-### Comming soon
