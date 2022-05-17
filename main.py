@@ -1,5 +1,6 @@
 import sys
 import os
+from tkinter import E
 
 INDENTS = 0
 VARS = []
@@ -21,13 +22,15 @@ def loadprogram(filepath):
     program = open(filepath, 'r').read()
     return program
 
-keywords = ["var"]
+keywords = ["make"]
 functions = ["print"]
 
 def typecheck(string):
     if string.startswith(" "):
         string = string.replace(" ", "", 1)
-    if string.isnumeric():
+    if "+" in string or "-" in string or "/" in string or "//" in string or "*" in string:
+        return string
+    elif string.isnumeric():
         return "int(" + string + ")"
     elif isfloat(string):
         return "float(" + string + ")"
@@ -43,18 +46,30 @@ def typecheck(string):
     else:
         print("Something very weird has just occured and i have no idea how you did that.")
 
+def mathreplace(string):
+    string = string.split()
+    string = f"str({string[0]} {string[1]} {string[2]})"
+    return string
+
 def lexline(line: str):
     line = line.split("(")
     line = [i.replace(")", "") for i in line]
+    line = [i.replace(";", "") for i in line]
     for i in range(len(line)):
         if "//" in line[i]:
-            pass
-        elif "var " in line[i]:
-            pass
+            return line
+        if "+" in line[0] or "-" in line[0] or "/" in line[0] or "//" in line[0] or "*" in line[0]:
+            line = line[i].split("=")
+            line[1] = mathreplace(line[1])
+            line[0] = f"{line[0]}= {line[1]}"
+            del line[1]
+            return line
+        if "make " in line[i]:
+            return line
         elif line[i] in functions or line[i] in keywords:
-            pass
+            return line
         elif line[i] == "":
-            pass
+            return line
         else:
             line[i] = typecheck(line[i])
     return line
@@ -63,8 +78,12 @@ def parseline(line: list):
     if "//" in line[0]:
         line = line[0].replace("//", "#")
         line += "\n"
-    elif "var " in line[0]:
-        line = line[0].replace("var ", "")
+        line = str(line)
+        return line
+    if "+" in line[0] or "-" in line[0] or "/" in line[0] or "//" in line[0] or "*" in line[0]:
+        pass
+    if "make " in line[0]:
+        line = line[0].replace("make ", "")
         line = line.split("=")
         line[len(line) - 1] = typecheck(line[len(line) - 1])
         line[0] = line[0].replace(" ", "")

@@ -1,8 +1,6 @@
 # Test program coded inside of SpriteLang
 
-welcome = str("Welcome to SpriteLang") 
+welcome = str("Welcome to SpriteLang!") 
+hello = str("Hello, World!") 
 
-print(welcome)
-
-welcome = str("Bye") 
-print(welcome)
+print(welcome + " - " + hello)

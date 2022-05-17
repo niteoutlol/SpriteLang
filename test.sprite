@@ -1,8 +1,6 @@
 // Test program coded inside of SpriteLang
 
-var welcome = "Welcome to SpriteLang"
+make welcome = "Welcome to SpriteLang!"
+make hello = "Hello, World!"
 
-print(welcome)
-
-var welcome = "Bye"
-print(welcome)
+print(welcome + " - " + hello)
